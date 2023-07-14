@@ -1,12 +1,10 @@
-/* eslint-disable space-before-function-paren */
 import _ from 'lodash'
 import React from 'react'
 import AllFilesView from './AllFilesView'
 import useFetch from 'hooks/useFetch'
 import FetchFeedback from 'components/FetchFeedback'
-import { useLocation, useNavigate } from 'react-router-dom'
 
-function createUpdateRequest({ url, method, onSuccess }) {
+function createUpdateRequest ({ url, method, onSuccess }) {
   return async (data) => {
     const result = await fetch(url, {
       method: method || 'POST',
@@ -23,14 +21,11 @@ function createUpdateRequest({ url, method, onSuccess }) {
 const AllFiles = () => {
   const username = useFetch('/api/username')
   const files = useFetch('/api/files')
-  const location = useLocation()
-  const navigate = useNavigate()
 
   const addFile = createUpdateRequest({
     url: '/api/files',
     onSuccess: () => files.refetch(),
   })
-
 
   return (
     <FetchFeedback
@@ -41,8 +36,6 @@ const AllFiles = () => {
           addFile={addFile}
           files={files.data}
           username={_.get(username, 'data.username')}
-          location={location}
-          navigate={navigate}
         />
       )}
     </FetchFeedback>

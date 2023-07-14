@@ -1,4 +1,3 @@
-/* eslint-disable space-before-function-paren */
 import { last } from 'lodash'
 import React from 'react'
 import PropTypes from 'prop-types'
@@ -40,23 +39,23 @@ const imageTypes = {
   svg: true,
 }
 
-function getFileType(mimetype) {
+function getFileType (mimetype) {
   return last((mimetype || '').split('/'))
 }
 
-function isImageType(mimetype) {
+function isImageType (mimetype) {
   return !!imageTypes[getFileType(mimetype)]
 }
 
 class FileList extends React.Component {
-  renderIcon(mimetype) {
+  renderIcon (mimetype) {
     const Icon = isImageType(mimetype)
       ? IconImage
       : IconDocument
     return <Icon />
   }
 
-  render() {
+  render () {
     const { files } = this.props
 
     return (
@@ -92,7 +91,7 @@ FileList.defaultProps = {
 
 FileList.propTypes = {
   files: PropTypes.arrayOf(PropTypes.shape({
-    id: PropTypes.number.isRequired,
+    id: PropTypes.string.isRequired,
     mimetype: PropTypes.string.isRequired,
     description: PropTypes.string.isRequired,
     filename: PropTypes.string.isRequired,
