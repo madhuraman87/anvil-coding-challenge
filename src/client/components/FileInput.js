@@ -1,3 +1,4 @@
+/* eslint-disable space-before-function-paren */
 import React from 'react'
 import PropTypes from 'prop-types'
 import styled from 'styled-components'
@@ -102,7 +103,7 @@ const Text = styled.div`
   display: block;
 `
 
-function acceptsImage (mime) {
+function acceptsImage(mime) {
   return mime.indexOf('image/') > -1
 }
 
@@ -115,12 +116,12 @@ const mimeTypeRegex = {
   '': /.+/i,
 }
 
-function acceptsFileName (mime, filename) {
+function acceptsFileName(mime, filename) {
   const re = mimeTypeRegex[mime]
   return re ? re.test(filename) : false
 }
 
-function getBase64 (file) {
+function getBase64(file) {
   return new Promise((resolve) => {
     const reader = new FileReader()
     reader.readAsDataURL(file)
@@ -164,7 +165,7 @@ class FileInput extends React.Component {
     onChange(value)
   }
 
-  renderValue () {
+  renderValue() {
     const { value } = this.props
     if (!value) return null
 
@@ -184,13 +185,13 @@ class FileInput extends React.Component {
     )
   }
 
-   renderDefaultChildren = ({ isEmpty, dropText }) => {
-     return isEmpty ? (
-       <>
-         <Text>{dropText}</Text>
-       </>
-     ) : this.renderValue()
-   }
+  renderDefaultChildren = ({ isEmpty, dropText }) => {
+    return isEmpty ? (
+      <>
+        <Text>{dropText}</Text>
+      </>
+    ) : this.renderValue()
+  }
 
   renderDropzone = ({
     getRootProps,
@@ -231,7 +232,7 @@ class FileInput extends React.Component {
     )
   }
 
-  render () {
+  render() {
     const {
       disabled,
       accept,
@@ -270,8 +271,8 @@ FileInput.defaultProps = {
 
   maxSize: 2 * 1024 * 1024, // 2mb
 
-  onFocus: () => {},
-  onBlur: () => {},
+  onFocus: () => { },
+  onBlur: () => { },
 
   children: null,
 }
@@ -281,7 +282,7 @@ FileInput.propTypes = {
 
   dropText: PropTypes.string,
 
-  accept: PropTypes.string,
+  accept: PropTypes.object,
   maxSize: PropTypes.number,
   disabled: PropTypes.bool,
 
