@@ -1,3 +1,4 @@
+/* eslint-disable space-before-function-paren */
 import React from 'react'
 import PropTypes from 'prop-types'
 
@@ -37,7 +38,7 @@ class Form extends React.Component {
     })
   }
 
-  render () {
+  render() {
     const { submitButtonText, children } = this.props
     const { isSubmitting } = this.state
     const fields = React.Children.map(children, this.renderField)
@@ -65,7 +66,7 @@ Form.defaultProps = {
 Form.propTypes = {
   submitButtonText: PropTypes.string.isRequired,
   onSubmit: PropTypes.func.isRequired,
-  children: PropTypes.func.isRequired,
+  children: PropTypes.node.isRequired,
 }
 
 export default Form
