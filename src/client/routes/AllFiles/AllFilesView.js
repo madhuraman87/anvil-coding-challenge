@@ -74,8 +74,31 @@ class AllFilesView extends Component {
   }
 
   handleAddFile = (data) => {
-    const { addFile } = this.props
-    return addFile(data)
+    const { addFile, files } = this.props
+    const fileName = data?.file?.name
+    // Check if the filename already exists
+    const isDuplicateFile = files.some((file) => file.filename === fileName)
+
+    if (isDuplicateFile) {
+      // Generate a unique filename
+      let uniqueFileName = fileName
+      let count = 1
+      const extension = fileName.substring(fileName.lastIndexOf('.')) // Extract file extension
+
+      while (files.some((uploadedFile) => uploadedFile.filename === uniqueFileName)) {
+        uniqueFileName = `${fileName.substring(0, fileName.lastIndexOf('.'))}(${count})${extension}`
+        count++
+      }
+
+      // Save the file with the unique filename
+      const updatedFileData = { ...data }
+      updatedFileData.file.name = uniqueFileName
+
+      return addFile(updatedFileData)
+    } else {
+      // Save the file with the original filename
+      return addFile(data)
+    }
   }
 
   renderSearchComponent() {
