@@ -52,3 +52,16 @@ You can add new files!
 <img width="636" alt="Screen Shot 2020-05-07 at 12 30 03 PM" src="https://user-images.githubusercontent.com/69169/81336645-8cb1a780-905e-11ea-86ce-f882a2d5fd46.png">
 
 That's all it does without your help!
+
+## Task
+1) Search/Filter
+- Add a search box to the top of the list of files. 
+- The list of files should filter as you type
+- A query param should update as you type. e.g. localhost:3000/?q=elvis
+- Navigating to the page with a query param should search the file list on load
+
+2) Filename De-duplication
+- The coding challenge application allows you to upload multiple files with the same filename. The goal is to fix this. When someone uploads a file with a duplicate filename in the DB, rewrite the new filename to a filename with a unique identifier.
+  - If unicorns.png is uploaded and it already exists in the database, it should rewrite to unicorns(1).png. 
+  - It should count up and fill any gaps. e.g. unicorns.png is uploaded and [‘unicorns.png’, ‘unicorns(1).png’, ‘unicorns(3).png’, ‘unicorns(5).png’] exist, the next names would contain (2), (4), (6), (7), etc.
+  - Shoot for simplicity, the main goal is just that there are no dupes in the db!
