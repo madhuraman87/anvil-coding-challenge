@@ -1,3 +1,4 @@
+/* eslint-disable space-before-function-paren */
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import styled from 'styled-components'
@@ -9,6 +10,8 @@ import Toggler from 'components/Toggler'
 import IconPlus from 'components/icons/IconPlus'
 
 import NewFileForm from './NewFileForm'
+import SearchFiles from './SearchFiles'
+
 
 const StyledContainer = styled.div``
 
@@ -17,23 +20,108 @@ export const Title = styled.h1`
 `
 
 class AllFilesView extends Component {
-  handleAddFile = (data) => {
-    const { addFile } = this.props
-    return addFile(data)
+  state = {
+    searchQuery: '',
+    filteredFileList: [],
   }
 
-  renderFiles () {
+  componentDidMount() {
+    const { location } = this.props
+    const queryParams = new URLSearchParams(location.search)
+    const initialQuery = queryParams.get('q') || ''
+
+    this.setState({ searchQuery: initialQuery })
+    this.updateFilteredFileList()
+  }
+
+  shouldComponentUpdate(nextProps, nextState) {
+    return (
+      this.state.searchQuery !== nextState.searchQuery ||
+      this.state.filteredFileList !== nextState.filteredFileList
+    )
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (prevState.searchQuery !== this.state.searchQuery) {
+      this.updateFilteredFileList()
+    }
+  }
+
+  componentWillUnmount() {
+    clearTimeout(this.debouncedFiltering)
+  }
+
+  updateFilteredFileList = () => {
+    const { searchQuery } = this.state
     const { files } = this.props
+    const filteredFiles = searchQuery ? files.filter((file) =>
+      file.filename.toLowerCase().startsWith(searchQuery.toLowerCase())
+    ) : files
+    this.setState({ filteredFileList: filteredFiles })
+  }
+
+  handleSearchQueryChange = (newQuery) => {
+    const { navigate } = this.props
+    this.setState({ searchQuery: newQuery })
+
+    clearTimeout(this.debouncedFiltering)
+    this.debouncedFiltering = setTimeout(this.updateFilteredFileList, 300)
+
+    const queryParams = new URLSearchParams(window.location.search)
+    queryParams.set('q', newQuery)
+    navigate({ search: queryParams.toString() })
+
+  }
+
+  handleAddFile = (data) => {
+    const { addFile, files } = this.props
+    const fileName = data?.file?.name
+    // Check if the filename already exists
+    const isDuplicateFile = files.some((file) => file.filename === fileName)
+
+    if (isDuplicateFile) {
+      // Generate a unique filename
+      let uniqueFileName = fileName
+      let count = 1
+      const extension = fileName.substring(fileName.lastIndexOf('.')) // Extract file extension
+
+      while (files.some((uploadedFile) => uploadedFile.filename === uniqueFileName)) {
+        uniqueFileName = `${fileName.substring(0, fileName.lastIndexOf('.'))}(${count})${extension}`
+        count++
+      }
+
+      // Save the file with the unique filename
+      const updatedFileData = { ...data }
+      updatedFileData.file.name = uniqueFileName
+
+      return addFile(updatedFileData)
+    } else {
+      // Save the file with the original filename
+      return addFile(data)
+    }
+  }
+
+  renderSearchComponent() {
+    const { location } = this.props
+    const { searchQuery } = this.state
+    return (
+      <SearchFiles location={location} searchQuery={searchQuery}
+        onSearchQueryChange={this.handleSearchQueryChange} />
+    )
+  }
+
+  renderFiles() {
+    const { filteredFileList } = this.state
     return (
       <Content.Card>
-        <FileList
-          files={files}
-        />
+        {filteredFileList.length ? (<FileList
+          files={filteredFileList}
+        />) : (<StyledContainer>No Files found</StyledContainer>)}
       </Content.Card>
     )
   }
 
-  renderNewFileForm () {
+  renderNewFileForm() {
     return (
       <Toggler
         renderButton={({ showItem, onClick }) => (
@@ -50,11 +138,12 @@ class AllFilesView extends Component {
     )
   }
 
-  render () {
+  render() {
     const { username } = this.props
     return (
       <StyledContainer>
         <Title>{`Hi ${username} 👋`}</Title>
+        {this.renderSearchComponent()}
         {this.renderFiles()}
         {this.renderNewFileForm()}
       </StyledContainer>
@@ -66,11 +155,13 @@ AllFilesView.propTypes = {
   addFile: PropTypes.func.isRequired,
   username: PropTypes.string.isRequired,
   files: PropTypes.arrayOf(PropTypes.shape({
-    id: PropTypes.string.isRequired,
+    id: PropTypes.number.isRequired,
     filename: PropTypes.string.isRequired,
     src: PropTypes.string.isRequired,
     description: PropTypes.string.isRequired,
   })).isRequired,
+  location: PropTypes.object.isRequired,
+  navigate: PropTypes.func.isRequired,
 }
 
 export default AllFilesView
